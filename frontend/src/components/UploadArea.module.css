@@ -39,6 +39,12 @@
   color: #6366f1;
 }
 
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .error {
   margin-top: 12px;
   font-size: 0.875rem;

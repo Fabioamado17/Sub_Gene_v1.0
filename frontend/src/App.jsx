@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import UploadArea from './components/UploadArea'
+import ProgressStatus from './components/ProgressStatus'
 import { uploadMkv } from './services/api'
 
 function App() {
@@ -35,20 +36,20 @@ function App() {
     }
   }
 
+  const isProcessing = status === 'uploading' || status === 'processing'
+
   return (
     <div>
       <h1>Gerador de Legendas</h1>
-      <UploadArea onFileSelect={setFile} />
+      <UploadArea onFileSelect={setFile} disabled={isProcessing} />
 
       {file && status === 'idle' && (
         <button onClick={handleSubmit}>Gerar Legendas</button>
       )}
 
-      {status === 'uploading' && <p>A carregar... {uploadProgress}%</p>}
-      {status === 'processing' && <p>A processar com Whisper...</p>}
-      {status === 'done' && <p>Legendas geradas! O download iniciou automaticamente.</p>}
+      <ProgressStatus status={status} progress={uploadProgress} />
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: 'red', marginTop: '12px' }}>{error}</p>}
     </div>
   )
 }

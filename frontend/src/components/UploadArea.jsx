@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import styles from './UploadArea.module.css'
 
-function UploadArea({ onFileSelect }) {
+function UploadArea({ onFileSelect, disabled = false }) {
   const [dragging, setDragging] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
   const [error, setError] = useState(null)
@@ -42,8 +42,8 @@ function UploadArea({ onFileSelect }) {
 
   return (
     <div
-      className={`${styles.area} ${dragging ? styles.dragging : ''}`}
-      onClick={() => inputRef.current.click()}
+      className={`${styles.area} ${dragging ? styles.dragging : ''} ${disabled ? styles.disabled : ''}`}
+      onClick={() => !disabled && inputRef.current.click()}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
