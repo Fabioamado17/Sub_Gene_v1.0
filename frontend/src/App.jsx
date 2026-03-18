@@ -2,6 +2,7 @@ import { useState } from 'react'
 import UploadArea from './components/UploadArea'
 import ProgressStatus from './components/ProgressStatus'
 import { uploadMkv } from './services/api'
+import styles from './App.module.css'
 
 function App() {
   const [file, setFile] = useState(null)
@@ -44,12 +45,14 @@ function App() {
       <UploadArea onFileSelect={setFile} disabled={isProcessing} />
 
       {file && status === 'idle' && (
-        <button onClick={handleSubmit}>Gerar Legendas</button>
+        <button className={styles.submitBtn} onClick={handleSubmit}>
+          Gerar Legendas
+        </button>
       )}
 
       <ProgressStatus status={status} progress={uploadProgress} />
 
-      {error && <p style={{ color: 'red', marginTop: '12px' }}>{error}</p>}
+      {error && <p className={styles.error}>{error}</p>}
     </div>
   )
 }
