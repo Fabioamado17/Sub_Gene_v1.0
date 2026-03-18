@@ -14,7 +14,7 @@ function App() {
   const [status, setStatus] = useState('idle')
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState(null)
-  const [language, setLanguage] = useState('auto')
+  const [language, setLanguage] = useState('pt')
   const [files, setFiles] = useState([])
 
   const fetchFiles = useCallback(async () => {
