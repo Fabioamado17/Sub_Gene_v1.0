@@ -1,15 +1,16 @@
 import { useState, useRef } from 'react'
 import styles from './UploadArea.module.css'
 
-function UploadArea({ onFileSelect, disabled = false }) {
+function UploadArea({ onFileSelect, disabled = false, accept = '.mkv', label = 'Arrasta um ficheiro para aqui' }) {
   const [dragging, setDragging] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
   const [error, setError] = useState(null)
   const inputRef = useRef(null)
 
   function validateAndSelect(file) {
-    if (!file.name.toLowerCase().endsWith('.mkv')) {
-      setError('Apenas ficheiros .mkv são suportados.')
+    const ext = accept.replace('.', '')
+    if (!file.name.toLowerCase().endsWith(accept)) {
+      setError(`Apenas ficheiros .${ext} são suportados.`)
       setSelectedFile(null)
       onFileSelect(null)
       return
@@ -51,7 +52,7 @@ function UploadArea({ onFileSelect, disabled = false }) {
       <input
         ref={inputRef}
         type="file"
-        accept=".mkv"
+        accept={accept}
         className={styles.hiddenInput}
         onChange={handleFileChange}
       />
@@ -60,7 +61,7 @@ function UploadArea({ onFileSelect, disabled = false }) {
         <p className={styles.filename}>{selectedFile.name}</p>
       ) : (
         <>
-          <p className={styles.instruction}>Arrasta um ficheiro .mkv para aqui</p>
+          <p className={styles.instruction}>{label}</p>
           <p className={styles.or}>ou clica para selecionar</p>
         </>
       )}

@@ -29,6 +29,14 @@ h1 {
   background: #4338ca;
 }
 
+.separator {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #9ca3af;
+  margin: 12px 0;
+}
+
 .error {
   margin-top: 12px;
   font-size: 0.875rem;

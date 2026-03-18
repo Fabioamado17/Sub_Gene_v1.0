@@ -1,15 +1,22 @@
 # Sub_Gene_v1.0 — Gerador de Legendas
 
-Aplicação web para gerar ficheiros de legendas (.srt) a partir de ficheiros de vídeo .mkv, utilizando o modelo Whisper da OpenAI para transcrição de áudio.
+Aplicação web com duas funcionalidades principais:
+- Gerar um ficheiro `.srt` a partir de um vídeo `.mkv` (transcrição via Whisper)
+- Incorporar um ficheiro `.srt` existente num vídeo `.mkv`
 
 ---
 
-## Como funciona
+## Funcionalidades
 
-1. O utilizador faz upload de um ficheiro .mkv no browser.
-2. O frontend envia o ficheiro para o backend via HTTP.
-3. O backend extrai o áudio com FFmpeg e transcreve-o com o Whisper.
-4. O ficheiro .srt gerado é devolvido ao browser e o download inicia automaticamente.
+### Gerar Legendas
+1. Faz upload de um ficheiro `.mkv`
+2. O backend extrai o áudio com FFmpeg e transcreve com o modelo Whisper
+3. O ficheiro `legendas.srt` é devolvido e o download inicia automaticamente
+
+### Incorporar Legendas
+1. Faz upload de um ficheiro `.mkv` e de um ficheiro `.srt`
+2. O backend usa FFmpeg para muxar as legendas no contentor MKV sem recodificar
+3. O ficheiro `video_legendado.mkv` é devolvido e o download inicia automaticamente
 
 ---
 
@@ -17,9 +24,14 @@ Aplicação web para gerar ficheiros de legendas (.srt) a partir de ficheiros de
 
 ```
 Sub_Gene_v1.0/
-  frontend/   - SPA em React + Vite
-  backend/    - API em FastAPI (Python)
-  DEVLOG.md   - Registo de todas as alterações com explicações didáticas
+  frontend/         - SPA em React + Vite
+    src/
+      components/   - UploadArea, ProgressStatus, Tabs
+      services/     - api.js (comunicação com o backend)
+  backend/
+    main.py         - API FastAPI com endpoints /upload e /embed
+    requirements.txt
+  DEVLOG.md         - Registo de todas as alterações com explicações didáticas
 ```
 
 ---
@@ -28,7 +40,7 @@ Sub_Gene_v1.0/
 
 - Node.js 18 ou superior
 - Python 3.10 ou superior
-- FFmpeg instalado e acessível (ver nota abaixo)
+- FFmpeg (instalado via winget — ver nota abaixo)
 
 ---
 
@@ -36,10 +48,9 @@ Sub_Gene_v1.0/
 
 ### Backend
 
-```bash
+```powershell
 cd backend
-source venv/Scripts/activate   # Windows
-# source venv/bin/activate     # macOS / Linux
+venv\Scripts\activate
 uvicorn main:app --reload
 ```
 
@@ -47,7 +58,7 @@ Fica disponível em `http://localhost:8000`.
 
 ### Frontend
 
-```bash
+```powershell
 cd frontend
 npm install
 npm run dev
@@ -57,9 +68,22 @@ Fica disponível em `http://localhost:5173`.
 
 ---
 
+## Endpoints da API
+
+| Método | Endpoint  | Descrição |
+|--------|-----------|-----------|
+| POST   | `/upload` | Recebe `.mkv`, devolve `.srt` gerado pelo Whisper |
+| POST   | `/embed`  | Recebe `.mkv` + `.srt`, devolve `.mkv` com legendas incorporadas |
+
+---
+
 ## Nota sobre o FFmpeg
 
-O FFmpeg foi instalado via winget e o caminho absoluto está definido em `backend/main.py`. Se o FFmpeg estiver disponível no PATH do sistema, a linha `FFMPEG_PATH` pode ser substituída apenas por `"ffmpeg"`.
+O FFmpeg foi instalado via winget. O caminho está definido em `backend/main.py` como `FFMPEG_LONG`. O código converte-o automaticamente para o formato curto do Windows (8.3) para evitar problemas com caracteres especiais em caminhos Unicode.
+
+O diretório do FFmpeg é também adicionado ao `PATH` do processo Python para que o Whisper o consiga encontrar internamente.
+
+Os ficheiros temporários são criados em `C:\SubGenTemp` (sem caracteres especiais) e apagados automaticamente após cada pedido.
 
 ---
 
@@ -80,12 +104,14 @@ O FFmpeg foi instalado via winget e o caminho absoluto está definido em `backen
 
 ## Modelos Whisper disponíveis
 
-O modelo é configurado em `backend/main.py`. Modelos mais grandes são mais precisos mas mais lentos:
+Configurado em `backend/main.py` na linha `whisper.load_model(...)`. Modelos maiores são mais precisos mas mais lentos em CPU:
 
 | Modelo | Velocidade | Precisão |
 |--------|------------|----------|
-| tiny   | Muito rápido | Baixa   |
-| base   | Rápido       | Razoável (predefinido) |
+| tiny   | Muito rápido | Baixa (predefinido) |
+| base   | Rápido       | Razoável |
 | small  | Moderado     | Boa      |
 | medium | Lento        | Muito boa |
 | large  | Muito lento  | Excelente |
+
+Para ficheiros grandes (mais de 30 minutos) recomenda-se usar `tiny` ou `base` em CPU, ou considerar a API Whisper da OpenAI.
