@@ -14,10 +14,10 @@ function Nav({ page, onNavigate, theme, onToggleTheme }) {
           Casa
         </button>
         <button
-          className={`${styles.link} ${page === 'saldo' ? styles.active : ''}`}
-          onClick={() => onNavigate('saldo')}
+          className={`${styles.link} ${page === 'financas' ? styles.active : ''}`}
+          onClick={() => onNavigate('financas')}
         >
-          Saldo mensal
+          Finanças
         </button>
         <button
           className={`${styles.link} ${page === 'movies' ? styles.active : ''}`}

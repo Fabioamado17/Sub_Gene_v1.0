@@ -1,5 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
-import { getLuzEntries, getAguaEntries, getGasEntries } from '../services/api'
+import {
+  getLuzEntries, getAguaEntries, getGasEntries,
+  getPrestacaoEntries, getTelevisaoEntries,
+} from '../services/api'
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts'
@@ -15,29 +18,48 @@ function groupByMonth(entries) {
 }
 
 function SaldoPage() {
-  const [luz,  setLuz]  = useState([])
-  const [agua, setAgua] = useState([])
-  const [gas,  setGas]  = useState([])
+  const [luz,       setLuz]       = useState([])
+  const [agua,      setAgua]      = useState([])
+  const [gas,       setGas]       = useState([])
+  const [prestacao, setPrestacao] = useState([])
+  const [televisao, setTelevisao] = useState([])
   const [view, setView] = useState('tabela')
 
   useEffect(() => {
     getLuzEntries().then(setLuz).catch(() => {})
     getAguaEntries().then(setAgua).catch(() => {})
     getGasEntries().then(setGas).catch(() => {})
+    getPrestacaoEntries().then(setPrestacao).catch(() => {})
+    getTelevisaoEntries().then(setTelevisao).catch(() => {})
   }, [])
 
   const months = useMemo(() => {
-    const luzMap  = groupByMonth(luz)
-    const aguaMap = groupByMonth(agua)
-    const gasMap  = groupByMonth(gas)
-    const keys = [...new Set([...Object.keys(luzMap), ...Object.keys(aguaMap), ...Object.keys(gasMap)])].sort()
+    const luzMap       = groupByMonth(luz)
+    const aguaMap      = groupByMonth(agua)
+    const gasMap       = groupByMonth(gas)
+    const prestacaoMap = groupByMonth(prestacao)
+    const televisaoMap = groupByMonth(televisao)
+    const keys = [...new Set([
+      ...Object.keys(luzMap),
+      ...Object.keys(aguaMap),
+      ...Object.keys(gasMap),
+      ...Object.keys(prestacaoMap),
+      ...Object.keys(televisaoMap),
+    ])].sort()
     return keys.map((key) => {
-      const l = luzMap[key]  ?? 0
-      const a = aguaMap[key] ?? 0
-      const g = gasMap[key]  ?? 0
-      return { key, label: new Date(key + '-01').toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' }), luz: l, agua: a, gas: g, total: l + a + g }
+      const l = luzMap[key]       ?? 0
+      const a = aguaMap[key]      ?? 0
+      const g = gasMap[key]       ?? 0
+      const p = prestacaoMap[key] ?? 0
+      const t = televisaoMap[key] ?? 0
+      return {
+        key,
+        label: new Date(key + '-01').toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' }),
+        luz: l, agua: a, gas: g, prestacao: p, televisao: t,
+        total: l + a + g + p + t,
+      }
     })
-  }, [luz, agua, gas])
+  }, [luz, agua, gas, prestacao, televisao])
 
   return (
     <div className={styles.page}>
@@ -67,6 +89,8 @@ function SaldoPage() {
               <th className={styles.th}>Luz</th>
               <th className={styles.th}>Água</th>
               <th className={styles.th}>Gás</th>
+              <th className={styles.th}>Prestação</th>
+              <th className={styles.th}>Televisão</th>
               <th className={styles.th}>Total</th>
             </tr>
           </thead>
@@ -74,9 +98,11 @@ function SaldoPage() {
             {months.map((m) => (
               <tr key={m.key} className={styles.tr}>
                 <td className={styles.td} style={{ textTransform: 'capitalize' }}>{m.label}</td>
-                <td className={styles.td}>{m.luz  > 0 ? `${m.luz.toFixed(2)} €`  : <span className={styles.none}>—</span>}</td>
-                <td className={styles.td}>{m.agua > 0 ? `${m.agua.toFixed(2)} €` : <span className={styles.none}>—</span>}</td>
-                <td className={styles.td}>{m.gas  > 0 ? `${m.gas.toFixed(2)} €`  : <span className={styles.none}>—</span>}</td>
+                <td className={styles.td}>{m.luz       > 0 ? `${m.luz.toFixed(2)} €`       : <span className={styles.none}>—</span>}</td>
+                <td className={styles.td}>{m.agua      > 0 ? `${m.agua.toFixed(2)} €`      : <span className={styles.none}>—</span>}</td>
+                <td className={styles.td}>{m.gas       > 0 ? `${m.gas.toFixed(2)} €`       : <span className={styles.none}>—</span>}</td>
+                <td className={styles.td}>{m.prestacao > 0 ? `${m.prestacao.toFixed(2)} €` : <span className={styles.none}>—</span>}</td>
+                <td className={styles.td}>{m.televisao > 0 ? `${m.televisao.toFixed(2)} €` : <span className={styles.none}>—</span>}</td>
                 <td className={`${styles.td} ${styles.tdTotal}`}>{m.total.toFixed(2)} €</td>
               </tr>
             ))}
@@ -86,9 +112,13 @@ function SaldoPage() {
 
       {view === 'grafico' && months.length > 0 && (
         <div className={styles.chartWrapper}>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={months.map((m) => ({ name: m.key, luz: m.luz, agua: m.agua, gas: m.gas }))}
+              data={months.map((m) => ({
+                name: m.key,
+                luz: m.luz, agua: m.agua, gas: m.gas,
+                prestacao: m.prestacao, televisao: m.televisao,
+              }))}
               margin={{ top: 4, right: 8, left: -16, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -100,9 +130,11 @@ function SaldoPage() {
                 labelStyle={{ color: 'var(--text)' }}
               />
               <Legend wrapperStyle={{ fontSize: '0.85rem', color: 'var(--text-muted)' }} />
-              <Bar dataKey="luz"  name="Luz"  stackId="a" fill="#6366f1" />
-              <Bar dataKey="agua" name="Água" stackId="a" fill="#38bdf8" />
-              <Bar dataKey="gas"  name="Gás"  stackId="a" fill="#fb923c" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="luz"       name="Luz"       stackId="a" fill="#6366f1" />
+              <Bar dataKey="agua"      name="Água"      stackId="a" fill="#38bdf8" />
+              <Bar dataKey="gas"       name="Gás"       stackId="a" fill="#fb923c" />
+              <Bar dataKey="prestacao" name="Prestação" stackId="a" fill="#a855f7" />
+              <Bar dataKey="televisao" name="Televisão" stackId="a" fill="#22d3ee" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

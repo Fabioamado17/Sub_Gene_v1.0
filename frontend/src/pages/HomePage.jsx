@@ -4,10 +4,8 @@ function HomePage({ onNavigate }) {
   return (
     <div className={styles.page}>
       <div className={styles.hero}>
-        <h1 className={styles.title}>Gestão Fábio</h1>
-        <p className={styles.subtitle}>
-          Gera e incorpora legendas nos teus filmes de forma rápida e local.
-        </p>
+        <h1 className={styles.title}>Gestão de Despesas</h1>
+        <p className={styles.subtitle}></p>
       </div>
 
       <div className={styles.grid}>
@@ -17,15 +15,13 @@ function HomePage({ onNavigate }) {
           <p className={styles.cardDesc}>
             Controla a iluminação e outros dispositivos da casa.
           </p>
-          <span className={styles.cardArrow}>→</span>
         </button>
-        <button className={styles.card} onClick={() => onNavigate('saldo')}>
+        <button className={styles.card} onClick={() => onNavigate('financas')}>
           <span className={styles.cardIcon}>📊</span>
-          <h2 className={styles.cardTitle}>Saldo mensal</h2>
+          <h2 className={styles.cardTitle}>Finanças</h2>
           <p className={styles.cardDesc}>
-            Visão consolidada das despesas mensais de Luz, Água e Gás.
+            Saldo mensal e registo de ordenado.
           </p>
-          <span className={styles.cardArrow}>→</span>
         </button>
         <button className={styles.card} onClick={() => onNavigate('movies')}>
           <span className={styles.cardIcon}>🎬</span>
@@ -33,7 +29,6 @@ function HomePage({ onNavigate }) {
           <p className={styles.cardDesc}>
             Gera legendas a partir de ficheiros .mkv ou incorpora um .srt existente.
           </p>
-          <span className={styles.cardArrow}>→</span>
         </button>
       </div>
     </div>

@@ -74,6 +74,30 @@ def init_db():
             value REAL    NOT NULL
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS compras (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            name       TEXT    NOT NULL,
+            quantity   TEXT    NOT NULL DEFAULT '',
+            done       INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT    NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS ordenado_entries (
+            id    INTEGER PRIMARY KEY AUTOINCREMENT,
+            date  TEXT    NOT NULL,
+            value REAL    NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS compras_entries (
+            id    INTEGER PRIMARY KEY AUTOINCREMENT,
+            date  TEXT    NOT NULL,
+            store TEXT    NOT NULL,
+            value REAL    NOT NULL
+        )
+    """)
     conn.commit()
     conn.close()
 
@@ -97,6 +121,27 @@ model = whisper.load_model("tiny")
 class LuzEntry(BaseModel):
     date: str
     value: float
+
+
+class ComprasEntry(BaseModel):
+    date: str
+    store: str
+    value: float
+
+
+def _update_bill(table: str, entry_id: int, entry: LuzEntry):
+    conn = get_db()
+    result = conn.execute(
+        f"UPDATE {table} SET date = ?, value = ? WHERE id = ?",
+        (entry.date, entry.value, entry_id),
+    )
+    conn.commit()
+    if result.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Registo não encontrado.")
+    row = conn.execute(f"SELECT * FROM {table} WHERE id = ?", (entry_id,)).fetchone()
+    conn.close()
+    return dict(row)
 
 
 @app.get("/luz")
@@ -131,6 +176,11 @@ def delete_luz(entry_id: int):
     return {"detail": "Registo apagado."}
 
 
+@app.patch("/luz/{entry_id}")
+def update_luz(entry_id: int, entry: LuzEntry):
+    return _update_bill("luz_entries", entry_id, entry)
+
+
 @app.get("/agua")
 def list_agua():
     conn = get_db()
@@ -161,6 +211,11 @@ def delete_agua(entry_id: int):
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="Registo não encontrado.")
     return {"detail": "Registo apagado."}
+
+
+@app.patch("/agua/{entry_id}")
+def update_agua(entry_id: int, entry: LuzEntry):
+    return _update_bill("agua_entries", entry_id, entry)
 
 
 @app.get("/gas")
@@ -195,6 +250,11 @@ def delete_gas(entry_id: int):
     return {"detail": "Registo apagado."}
 
 
+@app.patch("/gas/{entry_id}")
+def update_gas(entry_id: int, entry: LuzEntry):
+    return _update_bill("gas_entries", entry_id, entry)
+
+
 @app.get("/prestacao")
 def list_prestacao():
     conn = get_db()
@@ -227,6 +287,11 @@ def delete_prestacao(entry_id: int):
     return {"detail": "Registo apagado."}
 
 
+@app.patch("/prestacao/{entry_id}")
+def update_prestacao(entry_id: int, entry: LuzEntry):
+    return _update_bill("prestacao_entries", entry_id, entry)
+
+
 @app.get("/televisao")
 def list_televisao():
     conn = get_db()
@@ -257,6 +322,145 @@ def delete_televisao(entry_id: int):
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="Registo não encontrado.")
     return {"detail": "Registo apagado."}
+
+
+@app.patch("/televisao/{entry_id}")
+def update_televisao(entry_id: int, entry: LuzEntry):
+    return _update_bill("televisao_entries", entry_id, entry)
+
+
+@app.get("/ordenado")
+def list_ordenado():
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM ordenado_entries ORDER BY date DESC").fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+
+@app.post("/ordenado", status_code=201)
+def add_ordenado(entry: LuzEntry):
+    conn = get_db()
+    cursor = conn.execute(
+        "INSERT INTO ordenado_entries (date, value) VALUES (?, ?)",
+        (entry.date, entry.value),
+    )
+    conn.commit()
+    new_id = cursor.lastrowid
+    conn.close()
+    return {"id": new_id, "date": entry.date, "value": entry.value}
+
+
+@app.patch("/ordenado/{entry_id}")
+def update_ordenado(entry_id: int, entry: LuzEntry):
+    return _update_bill("ordenado_entries", entry_id, entry)
+
+
+@app.delete("/ordenado/{entry_id}")
+def delete_ordenado(entry_id: int):
+    conn = get_db()
+    result = conn.execute("DELETE FROM ordenado_entries WHERE id = ?", (entry_id,))
+    conn.commit()
+    conn.close()
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Registo não encontrado.")
+    return {"detail": "Registo apagado."}
+
+
+@app.get("/compras_entries")
+def list_compras_entries():
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM compras_entries ORDER BY date DESC").fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+
+@app.post("/compras_entries", status_code=201)
+def add_compras_entry(entry: ComprasEntry):
+    conn = get_db()
+    cursor = conn.execute(
+        "INSERT INTO compras_entries (date, store, value) VALUES (?, ?, ?)",
+        (entry.date, entry.store, entry.value),
+    )
+    conn.commit()
+    new_id = cursor.lastrowid
+    conn.close()
+    return {"id": new_id, "date": entry.date, "store": entry.store, "value": entry.value}
+
+
+@app.patch("/compras_entries/{entry_id}")
+def update_compras_entry(entry_id: int, entry: ComprasEntry):
+    conn = get_db()
+    result = conn.execute(
+        "UPDATE compras_entries SET date = ?, store = ?, value = ? WHERE id = ?",
+        (entry.date, entry.store, entry.value, entry_id),
+    )
+    conn.commit()
+    if result.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Registo não encontrado.")
+    row = conn.execute("SELECT * FROM compras_entries WHERE id = ?", (entry_id,)).fetchone()
+    conn.close()
+    return dict(row)
+
+
+@app.delete("/compras_entries/{entry_id}")
+def delete_compras_entry(entry_id: int):
+    conn = get_db()
+    result = conn.execute("DELETE FROM compras_entries WHERE id = ?", (entry_id,))
+    conn.commit()
+    conn.close()
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Registo não encontrado.")
+    return {"detail": "Registo apagado."}
+
+
+class CompraItem(BaseModel):
+    name: str
+    quantity: str = ''
+
+
+@app.get("/compras")
+def list_compras():
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM compras ORDER BY done ASC, created_at DESC").fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+
+@app.post("/compras", status_code=201)
+def add_compra(item: CompraItem):
+    conn = get_db()
+    cursor = conn.execute(
+        "INSERT INTO compras (name, quantity, done, created_at) VALUES (?, ?, 0, ?)",
+        (item.name.strip(), item.quantity.strip(), datetime.now().isoformat()),
+    )
+    conn.commit()
+    row = conn.execute("SELECT * FROM compras WHERE id = ?", (cursor.lastrowid,)).fetchone()
+    conn.close()
+    return dict(row)
+
+
+@app.patch("/compras/{item_id}/toggle")
+def toggle_compra(item_id: int):
+    conn = get_db()
+    conn.execute("UPDATE compras SET done = 1 - done WHERE id = ?", (item_id,))
+    conn.commit()
+    row = conn.execute("SELECT * FROM compras WHERE id = ?", (item_id,)).fetchone()
+    conn.close()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Item não encontrado.")
+    return dict(row)
+
+
+@app.delete("/compras/{item_id}")
+def delete_compra(item_id: int):
+    conn = get_db()
+    result = conn.execute("DELETE FROM compras WHERE id = ?", (item_id,))
+    conn.commit()
+    conn.close()
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Item não encontrado.")
+    return {"detail": "Item apagado."}
 
 
 def format_timestamp(seconds: float) -> str:

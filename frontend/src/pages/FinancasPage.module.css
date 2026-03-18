@@ -4,6 +4,11 @@
   padding: 40px 24px 48px;
 }
 
+.pageWide {
+  max-width: 1600px;
+  width: 100%;
+}
+
 .title {
   font-size: 1.75rem;
   font-weight: 600;
@@ -38,9 +43,7 @@
   transform: translateY(-2px);
 }
 
-.cardIcon {
-  font-size: 2rem;
-}
+.cardIcon { font-size: 2rem; }
 
 .cardTooltip {
   position: absolute;
@@ -69,9 +72,7 @@
   border-top-color: var(--text);
 }
 
-.card:hover .cardTooltip {
-  opacity: 1;
-}
+.card:hover .cardTooltip { opacity: 1; }
 
 .sectionHeader {
   display: flex;
@@ -79,6 +80,8 @@
   gap: 16px;
   margin-bottom: 24px;
 }
+
+.sectionHeader .title { margin-bottom: 0; }
 
 .backBtn {
   background: none;
@@ -97,75 +100,11 @@
   color: var(--text);
 }
 
-.sectionHeader .title {
-  margin-bottom: 0;
-}
-
-/* BillTab */
-
-.luzContent {
+.tabContent {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border-muted);
-  border-radius: 8px;
-  font-size: 0.9rem;
-  color: var(--text);
-  background: var(--bg);
-  transition: border-color 0.2s;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-.error {
-  font-size: 0.875rem;
-  color: var(--error);
-}
-
-.submitBtn {
-  padding: 11px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.submitBtn:hover  { background: var(--accent-hover); }
-.submitBtn:active { background: var(--accent-active); }
 
 .segmented {
   display: inline-flex;
@@ -187,74 +126,13 @@
   transition: background 0.15s, color 0.15s;
 }
 
-.seg:hover {
-  color: var(--text);
-}
+.seg:hover { color: var(--text); }
 
 .segActive {
   background: var(--bg-surface);
   color: var(--accent);
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: flex-end;
-  padding: 14px 16px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-
-.filterGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.filterLabel {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-}
-
-.filterSelect,
-.filterInput {
-  padding: 7px 10px;
-  border: 1px solid var(--border-muted);
-  border-radius: 6px;
-  font-size: 0.875rem;
-  color: var(--text);
-  background: var(--bg);
-  transition: border-color 0.2s;
-}
-
-.filterSelect:focus,
-.filterInput:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-.filterClear {
-  padding: 7px 12px;
-  background: none;
-  border: 1px solid var(--border-muted);
-  border-radius: 6px;
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-  align-self: flex-end;
-}
-
-.filterClear:hover {
-  color: var(--error);
-  border-color: var(--error-border);
 }
 
 .empty {
@@ -264,11 +142,8 @@
   padding: 32px 0;
 }
 
-.chartWrapper {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px 16px 12px;
+.tableScroll {
+  overflow-x: auto;
 }
 
 .table {
@@ -290,25 +165,31 @@
   color: var(--text-muted);
   background: var(--bg-hover);
   border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
-.tr:not(:last-child) {
-  border-bottom: 1px solid var(--border);
-}
-
-.tr:hover {
-  background: var(--bg-hover);
-}
+.tr:not(:last-child) { border-bottom: 1px solid var(--border); }
+.tr:hover { background: var(--bg-hover); }
 
 .td {
   padding: 12px 16px;
   font-size: 0.9rem;
   color: var(--text);
+  white-space: nowrap;
 }
 
 .tdValue {
   font-weight: 600;
   color: var(--accent);
+}
+
+.tdOrdenado {
+  font-weight: 600;
+  color: #22c55e;
+}
+
+.tdSaldo {
+  font-weight: 700;
 }
 
 .tdAction {
@@ -317,38 +198,71 @@
   white-space: nowrap;
 }
 
-.diffUp {
-  color: var(--error);
-  font-weight: 600;
-  font-size: 0.875rem;
+.none { color: var(--text-muted); }
+
+.chartWrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 16px 12px;
+  height: 500px;
 }
 
-.diffDown {
-  color: var(--success);
-  font-weight: 600;
-  font-size: 0.875rem;
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 360px;
 }
 
-.diffNone {
-  color: var(--text-muted);
-  font-size: 0.875rem;
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.deleteBtn {
-  padding: 4px 10px;
-  background: none;
-  border: 1px solid var(--error-border);
-  border-radius: 6px;
-  color: var(--error);
+.label {
   font-size: 0.8rem;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
 }
 
-.deleteBtn:hover {
-  background: var(--error);
-  color: #fff;
+.input {
+  padding: 10px 12px;
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg-surface);
+  transition: border-color 0.2s;
 }
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.error {
+  font-size: 0.875rem;
+  color: var(--error);
+}
+
+.submitBtn {
+  padding: 10px 20px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.2s;
+}
+
+.submitBtn:hover { background: var(--accent-hover); }
 
 .editBtn {
   padding: 4px 10px;
@@ -380,10 +294,7 @@
   transition: background 0.2s;
 }
 
-.saveBtn:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
-}
+.saveBtn:hover { background: var(--accent-hover); }
 
 .cancelBtn {
   padding: 4px 10px;
@@ -393,12 +304,9 @@
   color: var(--text-muted);
   font-size: 0.8rem;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
-.cancelBtn:hover {
-  background: var(--bg-hover);
-}
+.cancelBtn:hover { background: var(--bg-hover); }
 
 .inlineInput {
   padding: 5px 8px;
@@ -411,17 +319,4 @@
   box-sizing: border-box;
 }
 
-.inlineInput:focus {
-  outline: none;
-}
-
-.total {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  text-align: right;
-  padding: 6px 4px 0;
-}
-
-.total strong {
-  color: var(--accent);
-}
+.inlineInput:focus { outline: none; }
