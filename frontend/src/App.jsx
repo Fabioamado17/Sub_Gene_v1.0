@@ -3,6 +3,7 @@ import Nav from './components/Nav'
 import HomePage from './pages/HomePage'
 import MoviesPage from './pages/MoviesPage'
 import CasaPage from './pages/CasaPage'
+import SaldoPage from './pages/SaldoPage'
 
 function App() {
   const [page, setPage] = useState('home')
@@ -24,6 +25,7 @@ function App() {
       <Nav page={page} onNavigate={setPage} theme={theme} onToggleTheme={toggleTheme} />
       {page === 'home'   && <HomePage onNavigate={setPage} />}
       {page === 'casa'   && <CasaPage />}
+      {page === 'saldo'  && <SaldoPage />}
       {page === 'movies' && <MoviesPage />}
     </>
   )

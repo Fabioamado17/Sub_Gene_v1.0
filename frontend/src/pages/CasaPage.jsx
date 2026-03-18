@@ -1,16 +1,17 @@
 import { useState, useEffect, useMemo } from 'react'
 import {
-  getLuzEntries,  addLuzEntry,  deleteLuzEntry,
-  getAguaEntries, addAguaEntry, deleteAguaEntry,
+  getLuzEntries,       addLuzEntry,       deleteLuzEntry,
+  getAguaEntries,      addAguaEntry,      deleteAguaEntry,
+  getGasEntries,       addGasEntry,       deleteGasEntry,
+  getPrestacaoEntries, addPrestacaoEntry, deletePrestacaoEntry,
 } from '../services/api'
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-} from 'recharts'
 import styles from './CasaPage.module.css'
 
 const TABS = [
-  { id: 'luz',  label: 'Luz' },
-  { id: 'agua', label: 'Água' },
+  { id: 'luz',       label: 'Luz' },
+  { id: 'agua',      label: 'Água' },
+  { id: 'gas',       label: 'Gás' },
+  { id: 'prestacao', label: 'Prestação' },
 ]
 
 const VIEWS = [
@@ -275,6 +276,20 @@ function CasaPage() {
           getEntries={getAguaEntries}
           addEntry={addAguaEntry}
           deleteEntry={deleteAguaEntry}
+        />
+      )}
+      {tab === 'gas' && (
+        <BillTab
+          getEntries={getGasEntries}
+          addEntry={addGasEntry}
+          deleteEntry={deleteGasEntry}
+        />
+      )}
+      {tab === 'prestacao' && (
+        <BillTab
+          getEntries={getPrestacaoEntries}
+          addEntry={addPrestacaoEntry}
+          deleteEntry={deletePrestacaoEntry}
         />
       )}
     </div>

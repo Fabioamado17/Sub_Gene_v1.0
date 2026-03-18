@@ -19,6 +19,14 @@ function HomePage({ onNavigate }) {
           </p>
           <span className={styles.cardArrow}>→</span>
         </button>
+        <button className={styles.card} onClick={() => onNavigate('saldo')}>
+          <span className={styles.cardIcon}>📊</span>
+          <h2 className={styles.cardTitle}>Saldo mensal</h2>
+          <p className={styles.cardDesc}>
+            Visão consolidada das despesas mensais de Luz, Água e Gás.
+          </p>
+          <span className={styles.cardArrow}>→</span>
+        </button>
         <button className={styles.card} onClick={() => onNavigate('movies')}>
           <span className={styles.cardIcon}>🎬</span>
           <h2 className={styles.cardTitle}>Filmes</h2>
