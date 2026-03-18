@@ -45,6 +45,20 @@ export async function deleteLuzEntry(id) {
   await axios.delete(`${BASE_URL}/luz/${id}`)
 }
 
+export async function getAguaEntries() {
+  const response = await axios.get(`${BASE_URL}/agua`)
+  return response.data
+}
+
+export async function addAguaEntry(date, value) {
+  const response = await axios.post(`${BASE_URL}/agua`, { date, value })
+  return response.data
+}
+
+export async function deleteAguaEntry(id) {
+  await axios.delete(`${BASE_URL}/agua/${id}`)
+}
+
 export async function embedSubtitles(mkv, srt, onProgress) {
   const formData = new FormData()
   formData.append('mkv', mkv)

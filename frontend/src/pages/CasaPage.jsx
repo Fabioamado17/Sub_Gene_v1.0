@@ -1,15 +1,19 @@
 import { useState, useEffect, useMemo } from 'react'
-import { getLuzEntries, addLuzEntry, deleteLuzEntry } from '../services/api'
+import {
+  getLuzEntries,  addLuzEntry,  deleteLuzEntry,
+  getAguaEntries, addAguaEntry, deleteAguaEntry,
+} from '../services/api'
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
 } from 'recharts'
 import styles from './CasaPage.module.css'
 
 const TABS = [
-  { id: 'luz', label: 'Luz' },
+  { id: 'luz',  label: 'Luz' },
+  { id: 'agua', label: 'Água' },
 ]
 
-const LUZ_VIEWS = [
+const VIEWS = [
   { id: 'form',    label: 'Nova fatura' },
   { id: 'tabela',  label: 'Tabela' },
   { id: 'grafico', label: 'Gráfico' },
@@ -59,7 +63,7 @@ function Filters({ years, filters, onChange }) {
   )
 }
 
-function LuzTab() {
+function BillTab({ getEntries, addEntry, deleteEntry }) {
   const [view, setView] = useState('form')
   const [date, setDate] = useState('')
   const [value, setValue] = useState('')
@@ -68,14 +72,14 @@ function LuzTab() {
   const [filters, setFilters] = useState({ year: '', from: '', to: '' })
 
   useEffect(() => {
-    getLuzEntries().then(setEntries).catch(() => {})
-  }, [])
+    getEntries().then(setEntries).catch(() => {})
+  }, [getEntries])
 
   async function handleSubmit(e) {
     e.preventDefault()
     if (!date || !value) { setError('Preenche a data e o valor.'); return }
     try {
-      const entry = await addLuzEntry(date, parseFloat(value))
+      const entry = await addEntry(date, parseFloat(value))
       setEntries((prev) => [entry, ...prev])
       setDate('')
       setValue('')
@@ -87,7 +91,7 @@ function LuzTab() {
 
   async function handleDelete(id) {
     try {
-      await deleteLuzEntry(id)
+      await deleteEntry(id)
       setEntries((prev) => prev.filter((e) => e.id !== id))
     } catch {
       setError('Erro ao apagar o registo.')
@@ -104,20 +108,17 @@ function LuzTab() {
     [sortedAsc]
   )
 
-  const filtered = useMemo(() => {
-    return sortedAsc.filter((e) => {
-      const d = new Date(e.date)
-      if (filters.year && d.getFullYear() !== Number(filters.year)) return false
-      if (filters.from && e.date < filters.from) return false
-      if (filters.to   && e.date > filters.to)   return false
-      return true
-    })
-  }, [sortedAsc, filters])
+  const filtered = useMemo(() => sortedAsc.filter((e) => {
+    if (filters.year && new Date(e.date).getFullYear() !== Number(filters.year)) return false
+    if (filters.from && e.date < filters.from) return false
+    if (filters.to   && e.date > filters.to)   return false
+    return true
+  }), [sortedAsc, filters])
 
   return (
     <div className={styles.luzContent}>
       <div className={styles.segmented}>
-        {LUZ_VIEWS.map((v) => (
+        {VIEWS.map((v) => (
           <button
             key={v.id}
             className={`${styles.seg} ${view === v.id ? styles.segActive : ''}`}
@@ -262,7 +263,20 @@ function CasaPage() {
         ))}
       </div>
 
-      {tab === 'luz' && <LuzTab />}
+      {tab === 'luz' && (
+        <BillTab
+          getEntries={getLuzEntries}
+          addEntry={addLuzEntry}
+          deleteEntry={deleteLuzEntry}
+        />
+      )}
+      {tab === 'agua' && (
+        <BillTab
+          getEntries={getAguaEntries}
+          addEntry={addAguaEntry}
+          deleteEntry={deleteAguaEntry}
+        />
+      )}
     </div>
   )
 }
