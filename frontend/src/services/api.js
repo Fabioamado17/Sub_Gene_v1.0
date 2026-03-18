@@ -87,6 +87,20 @@ export async function deletePrestacaoEntry(id) {
   await axios.delete(`${BASE_URL}/prestacao/${id}`)
 }
 
+export async function getTelevisaoEntries() {
+  const response = await axios.get(`${BASE_URL}/televisao`)
+  return response.data
+}
+
+export async function addTelevisaoEntry(date, value) {
+  const response = await axios.post(`${BASE_URL}/televisao`, { date, value })
+  return response.data
+}
+
+export async function deleteTelevisaoEntry(id) {
+  await axios.delete(`${BASE_URL}/televisao/${id}`)
+}
+
 export async function embedSubtitles(mkv, srt, onProgress) {
   const formData = new FormData()
   formData.append('mkv', mkv)

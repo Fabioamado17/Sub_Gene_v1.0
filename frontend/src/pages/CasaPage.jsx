@@ -1,17 +1,19 @@
 import { useState, useEffect, useMemo } from 'react'
 import {
-  getLuzEntries,       addLuzEntry,       deleteLuzEntry,
-  getAguaEntries,      addAguaEntry,      deleteAguaEntry,
-  getGasEntries,       addGasEntry,       deleteGasEntry,
-  getPrestacaoEntries, addPrestacaoEntry, deletePrestacaoEntry,
+  getLuzEntries,        addLuzEntry,        deleteLuzEntry,
+  getAguaEntries,       addAguaEntry,       deleteAguaEntry,
+  getGasEntries,        addGasEntry,        deleteGasEntry,
+  getPrestacaoEntries,  addPrestacaoEntry,  deletePrestacaoEntry,
+  getTelevisaoEntries,  addTelevisaoEntry,  deleteTelevisaoEntry,
 } from '../services/api'
 import styles from './CasaPage.module.css'
 
-const TABS = [
-  { id: 'luz',       label: 'Luz' },
-  { id: 'agua',      label: 'Água' },
-  { id: 'gas',       label: 'Gás' },
-  { id: 'prestacao', label: 'Prestação' },
+const CARDS = [
+  { id: 'luz',       label: 'Luz',        icon: '💡' },
+  { id: 'agua',      label: 'Água',       icon: '💧' },
+  { id: 'gas',       label: 'Gás',        icon: '🔥' },
+  { id: 'prestacao', label: 'Prestação',  icon: '🏦' },
+  { id: 'televisao', label: 'Televisão',  icon: '📺' },
 ]
 
 const VIEWS = [
@@ -64,7 +66,7 @@ function Filters({ years, filters, onChange }) {
   )
 }
 
-function BillTab({ getEntries, addEntry, deleteEntry }) {
+function BillTab({ getEntries, addEntry, deleteEntry, monthOnly = false }) {
   const [view, setView] = useState('form')
   const [date, setDate] = useState('')
   const [value, setValue] = useState('')
@@ -78,9 +80,10 @@ function BillTab({ getEntries, addEntry, deleteEntry }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!date || !value) { setError('Preenche a data e o valor.'); return }
+    if (!date || !value) { setError('Preenche o mês e o valor.'); return }
+    const storedDate = monthOnly ? `${date}-01` : date
     try {
-      const entry = await addEntry(date, parseFloat(value))
+      const entry = await addEntry(storedDate, parseFloat(value))
       setEntries((prev) => [entry, ...prev])
       setDate('')
       setValue('')
@@ -133,12 +136,13 @@ function BillTab({ getEntries, addEntry, deleteEntry }) {
       {view === 'form' && (
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
-            <label className={styles.label}>Data</label>
+            <label className={styles.label}>{monthOnly ? 'Mês' : 'Data'}</label>
             <input
               className={styles.input}
-              type="date"
+              type={monthOnly ? 'month' : 'date'}
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              onClick={(e) => e.target.showPicker?.()}
             />
           </div>
           <div className={styles.field}>
@@ -180,9 +184,10 @@ function BillTab({ getEntries, addEntry, deleteEntry }) {
                   return (
                     <tr key={entry.id} className={styles.tr}>
                       <td className={styles.td}>
-                        {new Date(entry.date).toLocaleDateString('pt-PT', {
-                          day: '2-digit', month: 'long', year: 'numeric',
-                        })}
+                        {new Date(entry.date).toLocaleDateString('pt-PT', monthOnly
+                          ? { month: 'long', year: 'numeric' }
+                          : { day: '2-digit', month: 'long', year: 'numeric' }
+                        )}
                       </td>
                       <td className={`${styles.td} ${styles.tdValue}`}>
                         {Number(entry.value).toFixed(2)} €
@@ -220,7 +225,10 @@ function BillTab({ getEntries, addEntry, deleteEntry }) {
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart
                   data={filtered.map((e) => ({
-                    data: new Date(e.date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' }),
+                    data: new Date(e.date).toLocaleDateString('pt-PT', monthOnly
+                      ? { month: 'short', year: '2-digit' }
+                      : { day: '2-digit', month: 'short' }
+                    ),
                     valor: Number(e.value),
                   }))}
                   margin={{ top: 4, right: 8, left: -16, bottom: 0 }}
@@ -245,53 +253,44 @@ function BillTab({ getEntries, addEntry, deleteEntry }) {
   )
 }
 
+const BILL_APIS = {
+  luz:       { getEntries: getLuzEntries,       addEntry: addLuzEntry,       deleteEntry: deleteLuzEntry },
+  agua:      { getEntries: getAguaEntries,      addEntry: addAguaEntry,      deleteEntry: deleteAguaEntry },
+  gas:       { getEntries: getGasEntries,       addEntry: addGasEntry,       deleteEntry: deleteGasEntry },
+  prestacao: { getEntries: getPrestacaoEntries, addEntry: addPrestacaoEntry, deleteEntry: deletePrestacaoEntry, monthOnly: true },
+  televisao: { getEntries: getTelevisaoEntries, addEntry: addTelevisaoEntry, deleteEntry: deleteTelevisaoEntry, monthOnly: true },
+}
+
 function CasaPage() {
-  const [tab, setTab] = useState('luz')
+  const [section, setSection] = useState(null)
+
+  if (section) {
+    const card = CARDS.find((c) => c.id === section)
+    const api  = BILL_APIS[section]
+    return (
+      <div className={styles.page}>
+        <div className={styles.sectionHeader}>
+          <button className={styles.backBtn} onClick={() => setSection(null)}>
+            ← Casa
+          </button>
+          <h1 className={styles.title}>{card.icon} {card.label}</h1>
+        </div>
+        <BillTab {...api} />
+      </div>
+    )
+  }
 
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Casa</h1>
-
-      <div className={styles.tabs}>
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            className={`${styles.tab} ${tab === t.id ? styles.active : ''}`}
-            onClick={() => setTab(t.id)}
-          >
-            {t.label}
+      <div className={styles.grid}>
+        {CARDS.map((card) => (
+          <button key={card.id} className={styles.card} onClick={() => setSection(card.id)}>
+            <span className={styles.cardIcon}>{card.icon}</span>
+            <span className={styles.cardTooltip}>{card.label}</span>
           </button>
         ))}
       </div>
-
-      {tab === 'luz' && (
-        <BillTab
-          getEntries={getLuzEntries}
-          addEntry={addLuzEntry}
-          deleteEntry={deleteLuzEntry}
-        />
-      )}
-      {tab === 'agua' && (
-        <BillTab
-          getEntries={getAguaEntries}
-          addEntry={addAguaEntry}
-          deleteEntry={deleteAguaEntry}
-        />
-      )}
-      {tab === 'gas' && (
-        <BillTab
-          getEntries={getGasEntries}
-          addEntry={addGasEntry}
-          deleteEntry={deleteGasEntry}
-        />
-      )}
-      {tab === 'prestacao' && (
-        <BillTab
-          getEntries={getPrestacaoEntries}
-          addEntry={addPrestacaoEntry}
-          deleteEntry={deletePrestacaoEntry}
-        />
-      )}
     </div>
   )
 }

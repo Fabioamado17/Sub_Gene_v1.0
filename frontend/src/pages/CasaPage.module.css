@@ -12,37 +12,96 @@
   text-align: center;
 }
 
-.tabs {
+.grid {
   display: flex;
-  border-bottom: 2px solid var(--border);
+  flex-direction: row;
+  gap: 16px;
+}
+
+.card {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.12);
+  transform: translateY(-2px);
+}
+
+.cardIcon {
+  font-size: 2rem;
+}
+
+.cardTooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.cardTooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--text);
+}
+
+.card:hover .cardTooltip {
+  opacity: 1;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
-.tab {
-  flex: 1;
-  padding: 12px;
+.backBtn {
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.9rem;
   color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
 }
 
-.tab:hover {
+.backBtn:hover {
+  background: var(--bg-hover);
   color: var(--text);
 }
 
-.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  font-weight: 600;
+.sectionHeader .title {
+  margin-bottom: 0;
 }
 
-/* Luz tab */
+/* BillTab */
 
 .luzContent {
   display: flex;

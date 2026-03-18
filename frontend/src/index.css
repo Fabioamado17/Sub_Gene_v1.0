@@ -54,6 +54,11 @@
   --bar-track:        #334155;
 }
 
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
 body {
   font-family: system-ui, sans-serif;
   background: var(--bg);
