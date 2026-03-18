@@ -42,6 +42,251 @@
   font-weight: 600;
 }
 
-.content {
-  min-height: 120px;
+/* Luz tab */
+
+.luzContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg);
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.error {
+  font-size: 0.875rem;
+  color: var(--error);
+}
+
+.submitBtn {
+  padding: 11px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitBtn:hover  { background: var(--accent-hover); }
+.submitBtn:active { background: var(--accent-active); }
+
+.segmented {
+  display: inline-flex;
+  background: var(--bg-hover);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.seg {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.seg:hover {
+  color: var(--text);
+}
+
+.segActive {
+  background: var(--bg-surface);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filterLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.filterSelect,
+.filterInput {
+  padding: 7px 10px;
+  border: 1px solid var(--border-muted);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: var(--text);
+  background: var(--bg);
+  transition: border-color 0.2s;
+}
+
+.filterSelect:focus,
+.filterInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.filterClear {
+  padding: 7px 12px;
+  background: none;
+  border: 1px solid var(--border-muted);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  align-self: flex-end;
+}
+
+.filterClear:hover {
+  color: var(--error);
+  border-color: var(--error-border);
+}
+
+.empty {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 32px 0;
+}
+
+.chartWrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 16px 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.th {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: var(--bg-hover);
+  border-bottom: 1px solid var(--border);
+}
+
+.tr:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+
+.tr:hover {
+  background: var(--bg-hover);
+}
+
+.td {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.tdValue {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.tdAction {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.diffUp {
+  color: var(--error);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.diffDown {
+  color: var(--success);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.diffNone {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.deleteBtn {
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--error-border);
+  border-radius: 6px;
+  color: var(--error);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.deleteBtn:hover {
+  background: var(--error);
+  color: #fff;
 }
