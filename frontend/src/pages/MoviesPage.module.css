@@ -1,7 +1,13 @@
-h1 {
+.page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 24px 48px;
+}
+
+.title {
   font-size: 1.75rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text);
   margin-bottom: 24px;
   text-align: center;
 }
@@ -11,7 +17,7 @@ h1 {
   width: 100%;
   margin-top: 16px;
   padding: 12px;
-  background: #6366f1;
+  background: var(--accent);
   color: #fff;
   font-size: 1rem;
   font-weight: 600;
@@ -21,24 +27,19 @@ h1 {
   transition: background 0.2s;
 }
 
-.submitBtn:hover {
-  background: #4f46e5;
-}
-
-.submitBtn:active {
-  background: #4338ca;
-}
+.submitBtn:hover  { background: var(--accent-hover); }
+.submitBtn:active { background: var(--accent-active); }
 
 .filesSection {
   margin-top: 40px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border);
   padding-top: 24px;
 }
 
 .filesTitle {
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text);
   margin-bottom: 12px;
 }
 
@@ -46,13 +47,13 @@ h1 {
   text-align: center;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--text-subtle);
   margin: 12px 0;
 }
 
 .error {
   margin-top: 12px;
   font-size: 0.875rem;
-  color: #ef4444;
+  color: var(--error);
   text-align: center;
 }

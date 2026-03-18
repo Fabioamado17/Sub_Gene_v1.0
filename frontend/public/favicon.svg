@@ -1,19 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- body -->
-  <rect x="6" y="22" width="52" height="34" rx="4" fill="#1a1a1a"/>
-  <!-- top flap -->
-  <rect x="6" y="12" width="52" height="12" rx="3" fill="#374151"/>
-  <!-- flap diagonal stripes -->
-  <line x1="18" y1="12" x2="12" y2="24" stroke="#6366f1" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="30" y1="12" x2="24" y2="24" stroke="#6366f1" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="42" y1="12" x2="36" y2="24" stroke="#6366f1" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="54" y1="12" x2="48" y2="24" stroke="#6366f1" stroke-width="3.5" stroke-linecap="round"/>
-  <!-- white strip at top of body -->
-  <rect x="6" y="22" width="52" height="10" rx="2" fill="#f3f4f6"/>
-  <!-- colored blocks on strip -->
-  <rect x="14" y="22" width="7" height="10" fill="#6366f1"/>
-  <rect x="29" y="22" width="7" height="10" fill="#6366f1"/>
-  <rect x="44" y="22" width="7" height="10" fill="#6366f1"/>
-  <!-- play triangle -->
-  <polygon points="25,36 25,52 45,44" fill="#6366f1"/>
+  <!-- top-left block -->
+  <rect x="6" y="6" width="24" height="24" rx="5" fill="#6366f1"/>
+  <!-- top-right block -->
+  <rect x="34" y="6" width="24" height="24" rx="5" fill="#6366f1" opacity="0.5"/>
+  <!-- bottom-left block -->
+  <rect x="6" y="34" width="24" height="24" rx="5" fill="#6366f1" opacity="0.5"/>
+  <!-- bottom-right block -->
+  <rect x="34" y="34" width="24" height="24" rx="5" fill="#6366f1"/>
 </svg>

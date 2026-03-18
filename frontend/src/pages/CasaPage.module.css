@@ -1,3 +1,17 @@
+.page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 24px 48px;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
 .tabs {
   display: flex;
   border-bottom: 2px solid var(--border);
@@ -26,4 +40,8 @@
   color: var(--accent);
   border-bottom-color: var(--accent);
   font-weight: 600;
+}
+
+.content {
+  min-height: 120px;
 }

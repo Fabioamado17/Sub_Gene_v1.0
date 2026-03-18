@@ -1,21 +1,21 @@
 .area {
-  border: 2px dashed #ccc;
+  border: 2px dashed var(--border-dashed);
   border-radius: 12px;
   padding: 48px 24px;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
-  background: #fff;
+  background: var(--bg-surface);
   user-select: none;
 }
 
 .area:hover {
-  border-color: #888;
+  border-color: var(--border-dashed-hover);
 }
 
 .dragging {
-  border-color: #6366f1;
-  background: #eef2ff;
+  border-color: var(--accent);
+  background: var(--accent-bg);
 }
 
 .hiddenInput {
@@ -24,19 +24,19 @@
 
 .instruction {
   font-size: 1rem;
-  color: #555;
+  color: var(--text-faint);
 }
 
 .or {
   font-size: 0.875rem;
-  color: #aaa;
+  color: var(--text-faintest);
   margin-top: 8px;
 }
 
 .filename {
   font-size: 1rem;
   font-weight: 600;
-  color: #6366f1;
+  color: var(--accent);
 }
 
 .disabled {
@@ -48,5 +48,5 @@
 .error {
   margin-top: 12px;
   font-size: 0.875rem;
-  color: #ef4444;
+  color: var(--error);
 }
