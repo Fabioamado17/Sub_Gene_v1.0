@@ -2,9 +2,12 @@ import axios from 'axios'
 
 const BASE_URL = 'http://localhost:8000'
 
-export async function uploadMkv(file, onProgress) {
+export async function uploadMkv(file, language, onProgress) {
   const formData = new FormData()
   formData.append('file', file)
+  if (language && language !== 'auto') {
+    formData.append('language', language)
+  }
 
   const response = await axios.post(`${BASE_URL}/upload`, formData, {
     responseType: 'blob',
@@ -17,6 +20,15 @@ export async function uploadMkv(file, onProgress) {
   })
 
   return response.data
+}
+
+export async function getFiles() {
+  const response = await axios.get(`${BASE_URL}/files`)
+  return response.data
+}
+
+export async function deleteFile(filename) {
+  await axios.delete(`${BASE_URL}/files/${encodeURIComponent(filename)}`)
 }
 
 export async function embedSubtitles(mkv, srt, onProgress) {

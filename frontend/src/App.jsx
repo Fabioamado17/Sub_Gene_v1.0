@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import UploadArea from './components/UploadArea'
 import ProgressStatus from './components/ProgressStatus'
 import Tabs from './components/Tabs'
-import { uploadMkv, embedSubtitles } from './services/api'
+import FileList from './components/FileList'
+import LanguageSelect from './components/LanguageSelect'
+import { uploadMkv, embedSubtitles, getFiles, deleteFile } from './services/api'
 import styles from './App.module.css'
 
 function App() {
@@ -12,6 +14,21 @@ function App() {
   const [status, setStatus] = useState('idle')
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState(null)
+  const [language, setLanguage] = useState('auto')
+  const [files, setFiles] = useState([])
+
+  const fetchFiles = useCallback(async () => {
+    try {
+      const data = await getFiles()
+      setFiles(data)
+    } catch {
+      // servidor pode não estar disponível
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchFiles()
+  }, [fetchFiles])
 
   function handleTabChange(newTab) {
     setTab(newTab)
@@ -37,22 +54,32 @@ function App() {
 
     try {
       if (tab === 'generate') {
-        const blob = await uploadMkv(mkvFile, (percent) => {
+        const blob = await uploadMkv(mkvFile, language, (percent) => {
           setUploadProgress(percent)
           if (percent === 100) setStatus('processing')
         })
-        downloadBlob(blob, 'legendas.srt')
+        downloadBlob(blob, blob.name ?? 'legendas.srt')
       } else {
         const blob = await embedSubtitles(mkvFile, srtFile, (percent) => {
           setUploadProgress(percent)
           if (percent === 100) setStatus('processing')
         })
-        downloadBlob(blob, 'video_legendado.mkv')
+        downloadBlob(blob, blob.name ?? 'video_legendado.mkv')
       }
       setStatus('done')
+      fetchFiles()
     } catch (err) {
       setError(err.response?.data?.detail ?? 'Erro ao processar os ficheiros.')
       setStatus('idle')
+    }
+  }
+
+  async function handleDelete(filename) {
+    try {
+      await deleteFile(filename)
+      setFiles((prev) => prev.filter((f) => f.name !== filename))
+    } catch {
+      setError('Erro ao apagar o ficheiro.')
     }
   }
 
@@ -66,13 +93,20 @@ function App() {
       <Tabs active={tab} onChange={handleTabChange} />
 
       {tab === 'generate' && (
-        <UploadArea
-          key="generate-mkv"
-          label="Arrasta um ficheiro .mkv para aqui"
-          accept=".mkv"
-          onFileSelect={setMkvFile}
-          disabled={isProcessing}
-        />
+        <>
+          <UploadArea
+            key="generate-mkv"
+            label="Arrasta um ficheiro .mkv para aqui"
+            accept=".mkv"
+            onFileSelect={setMkvFile}
+            disabled={isProcessing}
+          />
+          <LanguageSelect
+            value={language}
+            onChange={setLanguage}
+            disabled={isProcessing}
+          />
+        </>
       )}
 
       {tab === 'embed' && (
@@ -104,6 +138,11 @@ function App() {
       <ProgressStatus status={status} progress={uploadProgress} />
 
       {error && <p className={styles.error}>{error}</p>}
+
+      <div className={styles.filesSection}>
+        <h2 className={styles.filesTitle}>Ficheiros gerados</h2>
+        <FileList files={files} onDelete={handleDelete} />
+      </div>
     </div>
   )
 }
