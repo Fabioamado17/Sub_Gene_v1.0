@@ -2,10 +2,8 @@ import os
 import uuid
 import subprocess
 import tempfile
-import ctypes
 import shutil
 import sqlite3
-import whisper
 from datetime import datetime
 from pathlib import Path
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
@@ -13,21 +11,26 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-def short_path(long_path: str) -> str:
-    buf = ctypes.create_unicode_buffer(512)
-    ctypes.windll.kernel32.GetShortPathNameW(long_path, buf, 512)
-    return buf.value or long_path
+ENABLE_WHISPER = os.getenv("ENABLE_WHISPER", "false").lower() == "true"
 
+if ENABLE_WHISPER:
+    import ctypes
+    import whisper
 
-FFMPEG_LONG = r"C:\Users\Fábio Amado\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1-full_build\bin\ffmpeg.exe"
-FFMPEG_PATH = short_path(FFMPEG_LONG)
-FFMPEG_DIR  = short_path(str(Path(FFMPEG_LONG).parent))
+    def short_path(long_path: str) -> str:
+        buf = ctypes.create_unicode_buffer(512)
+        ctypes.windll.kernel32.GetShortPathNameW(long_path, buf, 512)
+        return buf.value or long_path
 
-os.environ["PATH"] = FFMPEG_DIR + os.pathsep + os.environ.get("PATH", "")
+    FFMPEG_LONG = r"C:\Users\Fábio Amado\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1-full_build\bin\ffmpeg.exe"
+    FFMPEG_PATH = short_path(FFMPEG_LONG)
+    FFMPEG_DIR  = short_path(str(Path(FFMPEG_LONG).parent))
+    os.environ["PATH"] = FFMPEG_DIR + os.pathsep + os.environ.get("PATH", "")
+    model = whisper.load_model("tiny")
 
-TEMP_DIR   = Path("C:/SubGenTemp")
-OUTPUT_DIR = Path("C:/SubGenTemp/output")
-DB_PATH    = Path("C:/SubGenTemp/gestao.db")
+DB_PATH    = Path(os.getenv("DB_PATH", "C:/SubGenTemp/gestao.db"))
+TEMP_DIR   = Path(os.getenv("TEMP_DIR", "C:/SubGenTemp"))
+OUTPUT_DIR = TEMP_DIR / "output"
 TEMP_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
 tempfile.tempdir = str(TEMP_DIR)
@@ -103,19 +106,21 @@ def init_db():
 
 init_db()
 
-print(f"FFmpeg (curto):  {FFMPEG_PATH}")
-print(f"FFmpeg dir PATH: {FFMPEG_DIR}")
+if ENABLE_WHISPER:
+    print(f"FFmpeg (curto):  {FFMPEG_PATH}")
+    print(f"FFmpeg dir PATH: {FFMPEG_DIR}")
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://192.168.1.9:5173,capacitor://localhost,http://localhost").split(","),
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-model = whisper.load_model("tiny")
+if ENABLE_WHISPER:
+    model = whisper.load_model("tiny")
 
 
 class LuzEntry(BaseModel):
@@ -486,6 +491,8 @@ def cleanup_tmp(tmp_dir: Path):
 
 @app.post("/upload")
 async def upload(file: UploadFile = File(...), language: str = Form(None)):
+    if not ENABLE_WHISPER:
+        raise HTTPException(status_code=503, detail="Geração de legendas não disponível neste servidor.")
     if not file.filename.lower().endswith(".mkv"):
         raise HTTPException(status_code=400, detail="Apenas ficheiros .mkv são suportados.")
 
@@ -520,6 +527,8 @@ async def upload(file: UploadFile = File(...), language: str = Form(None)):
 
 @app.post("/embed")
 async def embed(mkv: UploadFile = File(...), srt: UploadFile = File(...)):
+    if not ENABLE_WHISPER:
+        raise HTTPException(status_code=503, detail="Incorporação de legendas não disponível neste servidor.")
     if not mkv.filename.lower().endswith(".mkv"):
         raise HTTPException(status_code=400, detail="O primeiro ficheiro deve ser .mkv.")
     if not srt.filename.lower().endswith(".srt"):
@@ -553,6 +562,8 @@ async def embed(mkv: UploadFile = File(...), srt: UploadFile = File(...)):
 
 @app.get("/files")
 async def list_files():
+    if not ENABLE_WHISPER:
+        return []
     files = []
     for f in sorted(OUTPUT_DIR.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True):
         if f.is_file():

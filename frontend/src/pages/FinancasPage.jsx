@@ -11,18 +11,9 @@ import {
 import styles from './FinancasPage.module.css'
 
 const CARDS = [
-  { id: 'saldo',   label: 'Saldo mensal', icon: '📊' },
-  { id: 'ordenado', label: 'Ordenado',    icon: '💰' },
+  { id: 'saldo',    label: 'Saldo mensal', icon: '📊', desc: 'Visão consolidada de todas as despesas e receitas por mês.' },
+  { id: 'ordenado', label: 'Ordenado',     icon: '💰', desc: 'Registo do ordenado mensal.' },
 ]
-
-function groupByMonth(entries) {
-  const map = {}
-  entries.forEach((e) => {
-    const key = e.date.slice(0, 7)
-    map[key] = (map[key] ?? 0) + Number(e.value)
-  })
-  return map
-}
 
 function groupByAdjustedMonth(entries) {
   const map = {}
@@ -56,12 +47,12 @@ function SaldoTab() {
   }, [])
 
   const months = useMemo(() => {
-    const luzMap       = groupByMonth(luz)
-    const aguaMap      = groupByMonth(agua)
-    const gasMap       = groupByMonth(gas)
-    const prestacaoMap = groupByMonth(prestacao)
-    const televisaoMap = groupByMonth(televisao)
-    const ordenadoMap  = groupByMonth(ordenado)
+    const luzMap       = groupByAdjustedMonth(luz)
+    const aguaMap      = groupByAdjustedMonth(agua)
+    const gasMap       = groupByAdjustedMonth(gas)
+    const prestacaoMap = groupByAdjustedMonth(prestacao)
+    const televisaoMap = groupByAdjustedMonth(televisao)
+    const ordenadoMap  = groupByAdjustedMonth(ordenado)
     const comprasMap   = groupByAdjustedMonth(compras)
     const keys = [...new Set([
       ...Object.keys(luzMap), ...Object.keys(aguaMap), ...Object.keys(gasMap),
@@ -371,7 +362,8 @@ function FinancasPage() {
         {CARDS.map((card) => (
           <button key={card.id} className={styles.card} onClick={() => setSection(card.id)}>
             <span className={styles.cardIcon}>{card.icon}</span>
-            <span className={styles.cardTooltip}>{card.label}</span>
+            <span className={styles.cardTitle}>{card.label}</span>
+            <span className={styles.cardDesc}>{card.desc}</span>
           </button>
         ))}
       </div>

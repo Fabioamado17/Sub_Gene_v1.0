@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL = 'http://localhost:8000'
+const BASE_URL = 'http://192.168.1.9:8880'
 
 export async function uploadMkv(file, language, onProgress) {
   const formData = new FormData()

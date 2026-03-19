@@ -18,22 +18,23 @@
 }
 
 .grid {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
 }
 
 .card {
-  flex: 1;
-  position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 20px;
+  padding: 24px;
   cursor: pointer;
+  text-align: left;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
 }
 
@@ -45,34 +46,17 @@
 
 .cardIcon { font-size: 2rem; }
 
-.cardTooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--text);
-  color: var(--bg);
-  font-size: 0.8rem;
+.cardTitle {
+  font-size: 1.1rem;
   font-weight: 600;
-  padding: 5px 10px;
-  border-radius: 6px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s;
+  color: var(--text);
 }
 
-.cardTooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: var(--text);
+.cardDesc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
-
-.card:hover .cardTooltip { opacity: 1; }
 
 .sectionHeader {
   display: flex;

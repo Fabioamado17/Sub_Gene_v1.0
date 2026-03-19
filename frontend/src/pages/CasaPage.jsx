@@ -13,12 +13,12 @@ import {
 import styles from './CasaPage.module.css'
 
 const CARDS = [
-  { id: 'luz',       label: 'Luz',        icon: '💡' },
-  { id: 'agua',      label: 'Água',       icon: '💧' },
-  { id: 'gas',       label: 'Gás',        icon: '🔥' },
-  { id: 'prestacao', label: 'Prestação',  icon: '🏦' },
-  { id: 'televisao', label: 'Televisão',  icon: '📺' },
-  { id: 'compras',   label: 'Compras',    icon: '🛒' },
+  { id: 'luz',       label: 'Luz',        icon: '💡', desc: 'Registo das faturas de eletricidade.' },
+  { id: 'agua',      label: 'Água',       icon: '💧', desc: 'Registo das faturas de água.' },
+  { id: 'gas',       label: 'Gás',        icon: '🔥', desc: 'Registo das faturas de gás.' },
+  { id: 'prestacao', label: 'Prestação',  icon: '🏦', desc: 'Acompanhamento da prestação mensal.' },
+  { id: 'televisao', label: 'Televisão',  icon: '📺', desc: 'Registo da subscrição de televisão.' },
+  { id: 'compras',   label: 'Compras',    icon: '🛒', desc: 'Despesas em supermercados por data e loja.' },
 ]
 
 const VIEWS = [
@@ -635,7 +635,8 @@ function CasaPage() {
         {CARDS.map((card) => (
           <button key={card.id} className={styles.card} onClick={() => setSection(card.id)}>
             <span className={styles.cardIcon}>{card.icon}</span>
-            <span className={styles.cardTooltip}>{card.label}</span>
+            <span className={styles.cardTitle}>{card.label}</span>
+            <span className={styles.cardDesc}>{card.desc}</span>
           </button>
         ))}
       </div>
